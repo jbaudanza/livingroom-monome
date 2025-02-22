@@ -1,0 +1,9 @@
+[Unit]
+Description=serialoscd - controller for monome
+[Service]
+Environment=XDG_CONFIG_HOME=/home/osmc/.config
+Type=simple
+ExecStart=serialoscd
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

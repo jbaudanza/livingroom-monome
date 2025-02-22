@@ -1,0 +1,13 @@
+[Unit]
+Description=livingroom-monome. Displays time until the next bus
+After=serialoscd.service
+
+[Service]
+Type=simple
+User=osmc
+WorkingDirectory=/home/osmc
+ExecStart=/home/osmc/.nvm/versions/node/v22.14.0/bin/node /home/osmc/livingroom-monome/dist/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
