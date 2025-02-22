@@ -44,7 +44,7 @@ fi
 
 echo "Restarting service..."
 ssh ${REMOTE_USER}@${REMOTE_HOST} << 'EOF'
-  # systemctl restart $SERVICE_NAME
+  sudo systemctl restart livingroom-monome
   echo "Deployment complete."
 EOF
 
