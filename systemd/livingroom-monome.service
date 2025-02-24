@@ -5,7 +5,7 @@ After=serialoscd.service
 [Service]
 Type=simple
 User=osmc
-WorkingDirectory=/home/osmc
+WorkingDirectory=/home/osmc/livingroom-monome
 ExecStart=/home/osmc/.nvm/versions/node/v22.14.0/bin/node /home/osmc/livingroom-monome/dist/index.js
 Restart=on-failure
 

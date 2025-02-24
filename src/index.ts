@@ -1,5 +1,8 @@
+require("dotenv").config();
+
 import serialosc from "serialosc";
 import font from "./4x6_pixel_font.json"
+import { getNextBus } from "./nextBus";
 
 type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
@@ -25,19 +28,64 @@ function runCounter(device: any) {
   return () => clearInterval(interval);
 }
 
+function runNextBus(device: any) {
+  device.all(1);
+
+  async function updateScreen() {
+    try {
+      const seconds = await getNextBus();
+      const minutes = Math.floor(seconds / 60);
+      const screen = initArray(8, 8);
+      drawDigits(screen, 0, 0, minutes);
+      device.map(0, 0, flip(screen));
+    } catch (e) {
+      console.error(e);
+
+      const screen = [
+        [1, 0, 0, 0, 0, 0, 0, 1],
+        [0, 1, 0, 0, 0, 0, 1, 0],
+        [0, 0, 1, 0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0, 1, 0, 0],
+        [0, 1, 0, 0, 0, 0, 1, 0],
+        [1, 0, 0, 0, 0, 0, 0, 1],
+      ];
+      device.map(0, 0, screen);
+    }
+  }
+
+  updateScreen();
+  const interval = setInterval(updateScreen, 30000);
+
+  return () => clearInterval(interval);
+}
+
 function withOnOff(device: any, next: (device: any) => Function) {
   let cleanup: Function | null = next(device);
 
+  function turnOff() {
+    if (cleanup) {
+      cleanup();
+      cleanup = null;
+      device.all(0);
+    }
+  }
+
+  const autoOffTimeout = setTimeout(() => {
+    console.log("turning off after timeout");
+    turnOff();
+  }, 60 * 60 * 1000);
+
   function onKey(press: { x: number, y: number, s: number }) {
+    console.log("key", press);
     // 1 = down, 0 = up
     if (press.s === 0) {
       return;
     }
     if (cleanup) {
       console.log("turning off");
-      cleanup();
-      cleanup = null;
-      device.all(0);
+      turnOff();
     } else {
       console.log("turning on");
       cleanup = next(device);
@@ -47,10 +95,9 @@ function withOnOff(device: any, next: (device: any) => Function) {
   device.on('key', onKey);
 
   return () => {
+    clearTimeout(autoOffTimeout);
     device.off('key', onKey);
-    if (cleanup) {
-      cleanup();
-    }
+    turnOff();
   }
 }
 
@@ -58,7 +105,7 @@ serialosc.start();
 serialosc.on('device:add', (device: any) => {
   console.log("Device added:", device.id);
 
-  processes[device.id] = withOnOff(device, runCounter);
+  processes[device.id] = withOnOff(device, runNextBus);
 });
 
 serialosc.on('device:remove', (device: any) => {

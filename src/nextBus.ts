@@ -1,18 +1,21 @@
 
-require("dotenv").config();
-
 const { XMLParser } = require("fast-xml-parser");
 
-type ArrivalInformation = {
-  type: "soon" | "unknown" | "error",
-} | { type: "time", minutes: number, seconds: number }
-
-export async function getNextBus(): Promise<ArrivalInformation> {
+export async function getNextBus(): Promise<number> {
   const serviceKey = process.env.BUS_API_SERVICE_KEY;
   const arsId = process.env.BUS_API_STATION_ARS_ID;
+  const busRouteAbrv = process.env.BUS_ROUTE_ABRV;
 
-  if (!serviceKey || !arsId) {
-    throw new Error("BUS_API_SERVICE_KEY or BUS_API_STATION_ARS_ID is not set");
+  if (!serviceKey) {
+    throw new Error("BUS_API_SERVICE_KEY is not set");
+  }
+
+  if (!arsId) {
+    throw new Error("BUS_API_STATION_ARS_ID is not set");
+  }
+
+  if (!busRouteAbrv) {
+    throw new Error("BUS_ROUTE_ABRV is not set");
   }
 
   const qs = new URLSearchParams({
@@ -27,36 +30,18 @@ export async function getNextBus(): Promise<ArrivalInformation> {
   const xml = parser.parse(data);
 
   const list = xml.ServiceResult.msgBody.itemList;
-  console.log(list.map((item: any) => item.arrmsg1));
 
-  // XXX Should we search by arsId 4236?
-  const item = list.find((item: any) => item.busRouteAbrv === 2016);
+  const item = list.find((item: any) => String(item.busRouteAbrv) === String(busRouteAbrv));
 
   if (!item) {
-    console.log("Route not found");
-    return { type: "error" };
+    throw new Error("Route not found: " + busRouteAbrv);
   }
 
-  const arrmsg1 = item.arrmsg1;
+  const traTime1 = item.traTime1;
 
-  if (typeof arrmsg1 !== "string") {
-    throw new Error("arrmsg1 is not a string");
+  if (traTime1 == null) {
+    throw new Error("traTime1 is missing");
   }
 
-  if (arrmsg1 == "운행종료" || arrmsg1 == "출발대기") {
-    return { type: "unknown" };
-  }
-
-  if (arrmsg1 == "곧 도착") {
-    return { type: "soon" };
-  }
-
-  const match = item.arrmsg1.match(/(\d+)분(\d+)초/);
-  if (match) {
-    return { type: "time", minutes: parseInt(match[1]), seconds: parseInt(match[2]) };
-  } else {
-    throw new Error("Can't parse string from: " + arrmsg1);
-  }
+  return traTime1;
 }
-
-getNextBus().then(console.log);
