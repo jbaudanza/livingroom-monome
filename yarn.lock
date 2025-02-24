@@ -21,6 +21,18 @@ debug@^2.2.0:
   dependencies:
     ms "2.0.0"
 
+dotenv@^16.4.7:
+  version "16.4.7"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.7.tgz#0e20c5b82950140aa99be360a8a5f52335f53c26"
+  integrity sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==
+
+fast-xml-parser@^5.0.6:
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.0.6.tgz#3531c630ea334bd67b91f236117fbf439a19b21f"
+  integrity sha512-5zIl0jWsewL5LdneswG6aJXx1YH1FXQ02UVIe/CZI3wXhI3SqP62bjcIYRNOgU43/MnN1t/MCpH6UoOtBrDNug==
+  dependencies:
+    strnum "^2.0.4"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -64,6 +76,11 @@ serialosc@^1.0.0:
     osc-emitter "^1.0.0"
     osc-receiver "^1.1.0"
     underscore "^1.6.0"
+
+strnum@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.0.4.tgz#7b2ace8a55d8c92a41c2d339ddb1bc306f337820"
+  integrity sha512-qrXhLMohxtEPKMlajtNaOp5zvAQUo6L3fNcdiJKzWH98kGfklqGwmxhFjM7DzxsuoVM7rJeiYr+lEcu4Jlu9UQ==
 
 typescript@^5.7.3:
   version "5.7.3"

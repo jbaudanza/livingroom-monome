@@ -1,9 +1,6 @@
 import serialosc from "serialosc";
 import font from "./4x6_pixel_font.json"
 
-// Instructions for oscserial in systemd
-// https://forum.bela.io/d/863-monome-grid-osc-bela/6
-
 type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 const processes: { [deviceId: string]: Function } = {};
